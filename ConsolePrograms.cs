@@ -11,7 +11,7 @@ namespace ConsoleDisplay
         public static void Clock(int size = 8)
         {
             int accuracy = 1;
-            Display display = Display.NewDisplay(2 * size + 1, 2 * size + 1, backgroundFill: ConsoleColor.Black, fillSymbol: ' ');
+            Display display = Display.NewDisplay(2 * size + 1, 2 * size + 1, backgroundFill: ConsoleColor.Black, fillSymbol: ' ', autoUpdate: true);
             display.SetPixel(size, 0, '0', foregroundColor: ConsoleColor.DarkRed);
             display.SetPixel((int)Math.Round(size + Math.Sin(Math.PI / 6) * size), (int)Math.Round(size - Math.Cos(Math.PI / 6) * size), '1', foregroundColor: ConsoleColor.DarkRed);
             display.SetPixel((int)Math.Round(size + Math.Sin(Math.PI / 3) * size), (int)Math.Round(size - Math.Cos(Math.PI / 3) * size), '2', foregroundColor: ConsoleColor.DarkRed);
@@ -26,7 +26,7 @@ namespace ConsoleDisplay
             display.SetPixel((int)Math.Round(size + Math.Sin(5 * Math.PI / 3) * size) + 1, (int)Math.Round(size - Math.Cos(5 * Math.PI / 3) * size), '0', foregroundColor: ConsoleColor.DarkRed);
             display.SetPixel((int)Math.Round(size + Math.Sin(11 * Math.PI / 6) * size), (int)Math.Round(size - Math.Cos(11 * Math.PI / 6) * size), '1', foregroundColor: ConsoleColor.DarkRed);
             display.SetPixel((int)Math.Round(size + Math.Sin(11 * Math.PI / 6) * size) + 1, (int)Math.Round(size - Math.Cos(11 * Math.PI / 6) * size), '1', foregroundColor: ConsoleColor.DarkRed);
-            display.Update();
+            //display.Update();
 
             double t = 2 * Math.PI / 60 * (DateTime.Now.Second + DateTime.Now.Minute * 60 + DateTime.Now.Hour * 3600);
             int secondHand = (int)Math.Round(1f * size);
@@ -38,7 +38,7 @@ namespace ConsoleDisplay
                 display.DrawLine(size, size, size + (int)Math.Round(secondHand * Math.Sin(t)), size + (int)Math.Round(secondHand * -Math.Cos(t)), backgroundColor: ConsoleColor.White);
                 display.DrawLine(size, size, size + (int)Math.Round(minuteHand * Math.Sin(t / 60)), size + (int)Math.Round(minuteHand * -Math.Cos(t / 60)), backgroundColor: ConsoleColor.Yellow);
                 display.DrawLine(size, size, size + (int)Math.Round(hourHand * Math.Sin(t / 3600 * 5)), size + (int)Math.Round(hourHand * -Math.Cos(t / 3600 * 5)), backgroundColor: ConsoleColor.DarkYellow);
-                display.Update();
+                //display.Update();
                 Thread.Sleep(1000 / accuracy);
                 display.DrawLine(size, size, size + (int)Math.Round(secondHand * Math.Sin(t)), size + (int)Math.Round(secondHand * -Math.Cos(t)), backgroundColor: ConsoleColor.Black);
                 display.DrawLine(size, size, size + (int)Math.Round(minuteHand * Math.Sin(t / 60)), size + (int)Math.Round(minuteHand * -Math.Cos(t / 60)), backgroundColor: ConsoleColor.Black);
@@ -47,10 +47,10 @@ namespace ConsoleDisplay
                 //Console.WriteLine(t);
             }
         }
-        public static void Snake(int size = 12, int minFrameTime = 100)
+        public static void Snake(int size = 12, int minFrameTime = 150)
         {
             //Render map with walls
-            Display display = Display.NewDisplay(2 * size + 1, 2 * size + 1, backgroundFill: ConsoleColor.White);
+            Display display = Display.NewDisplay(2 * size + 1, 2 * size + 1, backgroundFill: ConsoleColor.White, autoUpdate: true);
             display.FillArea(1, 1, 2 * size - 1, 2 * size - 1, backgroundColor: ConsoleColor.Black);
             //Render/setup snakehead and Body segments
             List<int[]> segments = new() { new int[2] { size, size } };
@@ -63,13 +63,14 @@ namespace ConsoleDisplay
                 fruitPos[0] = random.Next(1, 2 * size - 1);
                 fruitPos[1] = random.Next(1, 2 * size - 1);
             }
-            while (fruitPos == segments[0]);
+            while (fruitPos.SequenceEqual(segments[0]));
             display.SetPixel(fruitPos[0], fruitPos[1], backgroundColor: ConsoleColor.Red);
             //game loop
             int[] dPos = new int[2];
             char dir = ' ';
             while (true)
             {
+                //display.Update();
                 //controls
                 if (Console.KeyAvailable)
                 {
@@ -151,17 +152,16 @@ namespace ConsoleDisplay
 
                 display.SetPixel(segments[0][0], segments[0][1], character: '#', foregroundColor: ConsoleColor.DarkYellow, backgroundColor: ConsoleColor.DarkGreen);
 
-                display.Update();
                 Thread.Sleep(minFrameTime);
             }
-            display.Update();
+            //display.Update();
             string msg = $"Score: {segments.Count}";
             if (msg.Length <= 2 * size + 1)
                 for (int i = 0; i < msg.Length; i++)
                 {
                     Thread.Sleep(100);
                     display.SetPixel(size + i - msg.Length / 2, size, msg[i], ConsoleColor.Red, ConsoleColor.Black);
-                    display.Update(size + i - msg.Length / 2, size, size + i - msg.Length / 2, size);
+                    //display.Update(size + i - msg.Length / 2, size, size + i - msg.Length / 2, size);
                 }
             Console.SetCursorPosition(0, 2 * size + 1);
         }

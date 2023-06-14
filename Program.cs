@@ -13,8 +13,8 @@ namespace ConsoleDisplay
     {
         static void Main(string[] args)
         {
-            ConsolePrograms.Clock();
-            //ConsolePrograms.Snake();
+            //ConsolePrograms.Clock();
+            ConsolePrograms.Snake();
         }
     }
 }

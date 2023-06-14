@@ -24,7 +24,7 @@ namespace ConsoleDisplay
                 }
             }
             AutoUpdate = autoUpdate;
-            if (AutoUpdate) Update();
+            if (AutoUpdate) { Update(); Update(); } // resolves the problem but pretty horribly
         }
         #endregion
 
@@ -105,7 +105,7 @@ namespace ConsoleDisplay
             Character[x, y] = character ?? Character[x, y];
             ForegroundColor[x, y] = foregroundColor ?? ForegroundColor[x, y];
             BackgroundColor[x, y] = backgroundColor ?? BackgroundColor[x, y];
-            if (AutoUpdate) Update(x, y, x, y);
+            if (AutoUpdate) Update(x, y);
         }
         public void FillArea(int xStart, int yStart, int xEnd, int yEnd, char? character = null, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
         {
@@ -119,6 +119,7 @@ namespace ConsoleDisplay
                 }
             }
             if (AutoUpdate) Update(xStart, yStart, xEnd, yEnd);
+            //if (AutoUpdate) Update();
         }
         public void DrawLine(int xStart, int yStart, int xEnd, int yEnd, char? character = null, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
         {
@@ -148,8 +149,6 @@ namespace ConsoleDisplay
         }
         public void Update()
         {
-            if (Character == null)
-                return;
             Console.SetCursorPosition(0, 0);
             Console.CursorVisible = false;
             for (int j = 0; j < Character.GetLength(1); j++)
@@ -161,19 +160,21 @@ namespace ConsoleDisplay
                     Console.Write(Character[i, j]);
                     Console.Write(' ');
                 }
+                //Thread.Sleep(15); //weirdly seems to fix the behaviour of the console not rendering subpixels at the end of the line sometimes
+
                 Console.WriteLine();
+                //Console.SetCursorPosition(0, j + 1);
             }
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
         }
+
         public void Update(int xStart, int yStart, int xEnd, int yEnd)
         {
-            if (Character == null)
-                return;
             Console.CursorVisible = false;
             for (int j = yStart; j <= yEnd; j++)
             {
-                Console.SetCursorPosition((int)xStart * 2, (int)j);
+                Console.SetCursorPosition(xStart * 2, j);
                 for (int i = xStart; i <= xEnd; i++)
                 {
                     Console.ForegroundColor = ForegroundColor[i, j];
@@ -181,8 +182,21 @@ namespace ConsoleDisplay
                     Console.Write(Character[i, j]);
                     Console.Write(' ');
                 }
-                Console.WriteLine();
             }
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
+        }
+        public void Update(int x, int y)
+        {
+            Console.CursorVisible = false;
+            
+            Console.SetCursorPosition(x * 2, y);
+            
+            Console.ForegroundColor = ForegroundColor[x, y];
+            Console.BackgroundColor = BackgroundColor[x, y];
+            Console.Write(Character[x, y]);
+            Console.Write(' ');
+            
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
         }
