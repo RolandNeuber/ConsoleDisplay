@@ -11,7 +11,7 @@ namespace ConsoleDisplay
 		static void Main(string[] args)
 		{
 			Thread.Sleep(1000);
-			ConsolePrograms.Pong(20, 10);
+			ConsolePrograms.Pong(20, 50);
 		}
 	}
 }

@@ -169,17 +169,17 @@ namespace ConsoleDisplay
 		}
 		public static void Pong(int size = 10, int minFrameTime = 100)
 		{
-			Display display = Display.NewDisplay(4 * size + 1, 2 * size + 1, autoUpdate: true, fillSymbol: ' ');
+			Display display = Display.NewDisplay(4 * size + 1, 2 * size + 3, autoUpdate: true, fillSymbol: ' ');
 			display.DrawLine(0, 0, 4 * size, 0, backgroundColor: ConsoleColor.White);
-			display.DrawLine(0, 2 * size, 4 * size, 2 * size, backgroundColor: ConsoleColor.White);
+			display.DrawLine(0, 2 * size + 2, 4 * size, 2 * size + 2, backgroundColor: ConsoleColor.White);
 
 			//Initialization
 			Random random = new();
 			int[] score = { 0, 0 };
-			int[] ballPos = { 2 * size, size };
+			int[] ballPos = { 2 * size, size + 1 };
 			int[] ballDir = { random.Next(0, 2) == 0 ? -1 : 1, random.Next(0, 2) == 0 ? -1 : 1 };
-			int[] paddle1Pos = { 1, size };
-			int[] paddle2Pos = { 4 * size - 1, size };
+			int[] paddle1Pos = { 1, size + 1 };
+			int[] paddle2Pos = { 4 * size - 1, size + 1 };
 			int paddleHeight = (int)Math.Round(size / 4f);
 
 			//game loop
@@ -209,7 +209,7 @@ namespace ConsoleDisplay
 							paddle1Pos[1]--;
 							break;
 						case ConsoleKey.S:
-							if (paddle1Pos[1] + paddleHeight + 1 > 2 * size - 1) break;
+							if (paddle1Pos[1] + paddleHeight + 1 > 2 * size + 1) break;
 							paddle1Pos[1]++;
 							break;
 						case ConsoleKey.UpArrow:
@@ -217,7 +217,7 @@ namespace ConsoleDisplay
 							paddle2Pos[1]--;
 							break;
 						case ConsoleKey.DownArrow:
-							if (paddle2Pos[1] + paddleHeight + 1 > 2 * size - 1) break;
+							if (paddle2Pos[1] + paddleHeight + 1 > 2 * size + 1) break;
 							paddle2Pos[1]++;
 							break;
 						default:
@@ -236,8 +236,8 @@ namespace ConsoleDisplay
 								 paddle2Pos[0],
 								 paddle2Pos[1] + paddleHeight,
 								 backgroundColor: ConsoleColor.White);
-				display.Update(1, 1, 1, 2 * size - 1);
-				display.Update(4 * size - 1, 1, 4 * size - 1, 2 * size - 1);
+				display.Update(1, 1, 1, 2 * size + 1);
+				display.Update(4 * size - 1, 1, 4 * size - 1, 2 * size + 1);
 				display.AutoUpdate = true;
 
 				display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.Black);
@@ -246,7 +246,7 @@ namespace ConsoleDisplay
 				if (ballPos[0] + ballDir[0] < 0)
 				{
 					score[1]++;
-					ballPos = new int[] { 2 * size, size };
+					ballPos = new int[] { 2 * size, size + 1 };
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.White);
 					//Thread.Sleep(1000);
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.Black);
@@ -254,14 +254,14 @@ namespace ConsoleDisplay
 				else if (ballPos[0] + ballDir[0] > 4 * size)
 				{
 					score[0]++;
-					ballPos = new int[] { 2 * size, size };
+					ballPos = new int[] { 2 * size, size + 1};
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.White);
 					//Thread.Sleep(1000);
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.Black);
 				}
 
 				//vertical reflection
-				if (ballPos[1] + ballDir[1] < 1 || ballPos[1] + ballDir[1] > 2 * size - 1)
+				if (ballPos[1] + ballDir[1] < 1 || ballPos[1] + ballDir[1] > 2 * size + 1)
 					ballDir[1] = -ballDir[1];
 
 				//horizontal reflection
