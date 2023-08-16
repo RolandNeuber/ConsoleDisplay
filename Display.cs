@@ -71,10 +71,7 @@ namespace ConsoleDisplay
 										 ConsoleColor backgroundFill = ConsoleColor.Black,
 										 bool autoUpdate = false)
 		{
-			if (Instance == null)
-			{
-				return new Display(width, height, fillSymbol, foregroundFill, backgroundFill, autoUpdate);
-			}
+			Instance ??= new Display(width, height, fillSymbol, foregroundFill, backgroundFill, autoUpdate);
 			return Instance;
 		}
 		public void Resize(int width,
@@ -124,27 +121,44 @@ namespace ConsoleDisplay
 		public void DrawLine(int xStart, int yStart, int xEnd, int yEnd, char? character = null, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
 		{
 			//Bresenham Algorithm
-			int dx = xStart < xEnd ? xEnd - xStart : xStart - xEnd;
-			int sx = xStart < xEnd ? 1 : -1;
-			int dy = yStart < yEnd ? yStart - yEnd : yEnd - yStart;
-			int sy = yStart < yEnd ? 1 : -1;
-			int err = dx + dy;
-			int e2;
-			while (true)
+			//int dx = Math.Abs(xEnd - xStart);
+			//int sx = xStart < xEnd ? 1 : -1;
+			//int dy = Math.Abs(yEnd - yStart);
+			//int sy = yStart < yEnd ? 1 : -1;
+			//int error = dx - dy;
+			//int e2;
+			//while (true)
+			//{
+			//	SetPixel(xStart, yStart, character, foregroundColor, backgroundColor);
+			//	if (xStart == xEnd && yStart == yEnd) break;
+			//	e2 = 2 * error;
+			//	if (e2 > -dy)
+			//	{
+			//		error -= dy;
+			//		xStart += sx;
+			//	}
+			//	if (e2 < dx)
+			//	{
+			//		error += dx;
+			//		yStart += sy;
+			//	}
+			//}
+
+			//digital differential analyser; much easier than Bresenham's Algorithm
+			float x = xStart;
+			float y = yStart;
+			float dx = xEnd - xStart;
+			float dy = yEnd - yStart;
+			float step = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+			dx /= step;
+			dy /= step;
+
+			for (int i = 0; i <= step; i++)
 			{
-				SetPixel(xStart, yStart, character, foregroundColor, backgroundColor);
-				if (xStart == xEnd && yStart == yEnd) break;
-				e2 = 2 * err;
-				if (e2 > dy)
-				{
-					err += dy;
-					xStart += sx;
-				}
-				if (e2 < dx)
-				{
-					err += dx;
-					yStart += sy;
-				}
+				SetPixel((int)(x + 0.5f), (int)(y + 0.5f), character, foregroundColor, backgroundColor);
+				x += dx;
+				y += dy;
 			}
 		}
 		public void Update()

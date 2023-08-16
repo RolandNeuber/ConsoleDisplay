@@ -76,6 +76,7 @@ namespace ConsoleDisplay
 				if (Console.KeyAvailable)
 				{
 					char keyChar = Console.ReadKey(intercept: true).KeyChar;
+					//while (Console.KeyAvailable) Console.ReadKey(intercept: true);
 					switch (keyChar)
 					{
 						case 'a':
