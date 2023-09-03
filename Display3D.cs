@@ -46,10 +46,10 @@ namespace ConsoleDisplay
 			get { return screen; }
 			set { screen = value; }
 		}
-		public float Distance { get; set; }
-		public float Xi { get; set; }
-		public float Ypsilon { get; set; }
-		public float Zeta { get; set; }
+		public double Distance { get; set; } = 0;
+		public double Xi { get; set; } = 0;
+		public double Ypsilon { get; set; } = 0;
+		public double Zeta { get; set; } = 0;
 		#endregion
 
 		#region Methods
@@ -153,7 +153,7 @@ namespace ConsoleDisplay
 				z += dz;
 			}
 		}
-		protected void Project(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, float distance, float xi, float ypsilon, float zeta)
+		protected void Project(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double xi, double ypsilon, double zeta)
 		{
 			//orthogonal projection
 			//very slow; TODO: implement multithreading
@@ -182,9 +182,50 @@ namespace ConsoleDisplay
 				}
 			}
 		}
+		protected void ParallelProject(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double xi, double ypsilon, double zeta)
+		{
+			for (int x = 0; x < model.GetLength(0); x++)
+			{
+				for (int y = 0; y < model.GetLength(1); y++)
+				{
+					char currentChar = ' ';
+					ConsoleColor currentForegroundColor = ConsoleColor.White;
+					ConsoleColor? currentBackgroundColor = null;
+					screen[x, y] = (currentChar, currentForegroundColor, currentBackgroundColor ?? ConsoleColor.Black);
+					for (int z = 0; z < model.GetLength(2); z++)
+					{
+						if (currentChar == ' ')
+						{
+							currentChar = model[x, y, z].Item1;
+							currentForegroundColor = model[x, y, z].Item2;
+						}
+						currentBackgroundColor = model[x, y, z].Item3 ?? currentBackgroundColor;
+
+						int projectedX = (int)Math.Round((x - model.GetLength(0) / 2) * Math.Cos(ypsilon) * Math.Cos(-zeta) + (z - model.GetLength(2) / 2) * Math.Sin(ypsilon) + y * Math.Sin(-zeta));
+						int projectedY = (int)Math.Round((y - model.GetLength(1) / 2) * Math.Cos(-xi) * Math.Cos(zeta) + (z - model.GetLength(2) / 2) * Math.Sin(-xi) + x * Math.Sin(zeta));
+
+						projectedX += model.GetLength(0) / 2;
+						projectedY += model.GetLength(1) / 2;
+
+						try
+						{
+							screen[projectedX, projectedY] = (currentChar, currentForegroundColor, currentBackgroundColor ?? ConsoleColor.Black);
+						}
+						catch 
+						{
+
+						}
+					}
+				}
+			}
+		}
+		protected void PerspectiveProject(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double distance, double xi, double ypsilon, double zeta)
+		{
+			
+		}
 		public void Update()
 		{
-			Project(ref screen, model, Distance, Xi, Ypsilon, Zeta);
+			ParallelProject(ref screen, model, Xi, Ypsilon, Zeta);
 			Console.SetCursorPosition(0, 0);
 			Console.CursorVisible = false;
 			for (int j = 0; j < screen.GetLength(1); j++)
@@ -204,7 +245,7 @@ namespace ConsoleDisplay
 		}
 		public void Update(int xStart, int yStart, int xEnd, int yEnd)
 		{
-			Project(ref screen, model, Distance, Xi, Ypsilon, Zeta);
+			ParallelProject(ref screen, model, Xi, Ypsilon, Zeta);
 			Console.CursorVisible = false;
 			for (int j = yStart; j <= yEnd; j++)
 			{
@@ -223,7 +264,7 @@ namespace ConsoleDisplay
 		}
 		public void Update(int x, int y)
 		{
-			Project(ref screen, model, Distance, Xi, Ypsilon, Zeta);
+			ParallelProject(ref screen, model, Xi, Ypsilon, Zeta);
 			Console.CursorVisible = false;
 
 			Console.SetCursorPosition(x * 2, y);
