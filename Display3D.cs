@@ -35,21 +35,21 @@ namespace ConsoleDisplay
 		private static Display3D? Instance { get; set; }
 		public bool AutoUpdate { get; set; }
 		protected (char, ConsoleColor, ConsoleColor?)[,,] model;
-		protected (char, ConsoleColor, ConsoleColor?)[,,] Model
+		public (char, ConsoleColor, ConsoleColor?)[,,] Model
 		{
 			get { return model; }
-			set { model = value; }
+			protected set { model = value; }
 		}
 		protected (char, ConsoleColor, ConsoleColor)[,] screen;
-		protected (char, ConsoleColor, ConsoleColor)[,] Screen
+		public (char, ConsoleColor, ConsoleColor)[,] Screen
 		{
 			get { return screen; }
-			set { screen = value; }
+			protected set { screen = value; }
 		}
 		public double Distance { get; set; } = 0;
-		public double Xi { get; set; } = 0;
-		public double Ypsilon { get; set; } = 0;
-		public double Zeta { get; set; } = 0;
+		public double Alpha { get; set; } = 0;
+		public double Beta { get; set; } = 0;
+		public double Gamma { get; set; } = 0;
 		#endregion
 
 		#region Methods
@@ -148,7 +148,7 @@ namespace ConsoleDisplay
 			for (int i = 0; i <= step; i++)
 			{
 				SetPixel((int)(x + 0.5f), (int)(y + 0.5f), (int)(z + 0.5f), character, foregroundColor, backgroundColor);
-				x += dx;
+                x += dx;
 				y += dy;
 				z += dz;
 			}
@@ -201,15 +201,18 @@ namespace ConsoleDisplay
 						}
 						currentBackgroundColor = model[x, y, z].Item3 ?? currentBackgroundColor;
 
-						int projectedX = (int)Math.Round((x - model.GetLength(0) / 2) * Math.Cos(ypsilon) * Math.Cos(-zeta) + (z - model.GetLength(2) / 2) * Math.Sin(ypsilon) + y * Math.Sin(-zeta));
-						int projectedY = (int)Math.Round((y - model.GetLength(1) / 2) * Math.Cos(-xi) * Math.Cos(zeta) + (z - model.GetLength(2) / 2) * Math.Sin(-xi) + x * Math.Sin(zeta));
+						//projectedX = x * cos(ypsilon) * cos(-zeta) + z * sin(ypsilon) + y * sin(-zeta)
+						double projectedX = (x - model.GetLength(0) / 2f) * Math.Cos(ypsilon) * Math.Cos(zeta) + (z - model.GetLength(2) / 2f) * Math.Sin(ypsilon) + (y - model.GetLength(1) / 2f) * Math.Sin(-zeta);
+						//prejectedY = y * cos(-xi) * cos(zeta) + z * sin(-xi) + x * sin(zeta)
+						double projectedY = (y - model.GetLength(1) / 2f) * Math.Cos(-xi) * Math.Cos(zeta) + (z - model.GetLength(2) / 2f) * Math.Sin(-xi) + (x - model.GetLength(0) / 2f) * Math.Sin(zeta);
+						
 
-						projectedX += model.GetLength(0) / 2;
-						projectedY += model.GetLength(1) / 2;
+						projectedX += model.GetLength(0) / 2f;
+						projectedY += model.GetLength(1) / 2f;
 
 						try
 						{
-							screen[projectedX, projectedY] = (currentChar, currentForegroundColor, currentBackgroundColor ?? ConsoleColor.Black);
+							screen[(int)Math.Round(projectedX), (int)Math.Round(projectedY)] = (currentChar, currentForegroundColor, currentBackgroundColor ?? ConsoleColor.Black);
 						}
 						catch 
 						{
@@ -225,7 +228,7 @@ namespace ConsoleDisplay
 		}
 		public void Update()
 		{
-			ParallelProject(ref screen, model, Xi, Ypsilon, Zeta);
+			ParallelProject(ref screen, model, Alpha, Beta, Gamma);
 			Console.SetCursorPosition(0, 0);
 			Console.CursorVisible = false;
 			for (int j = 0; j < screen.GetLength(1); j++)
@@ -245,7 +248,7 @@ namespace ConsoleDisplay
 		}
 		public void Update(int xStart, int yStart, int xEnd, int yEnd)
 		{
-			ParallelProject(ref screen, model, Xi, Ypsilon, Zeta);
+			ParallelProject(ref screen, model, Alpha, Beta, Gamma);
 			Console.CursorVisible = false;
 			for (int j = yStart; j <= yEnd; j++)
 			{
@@ -264,7 +267,7 @@ namespace ConsoleDisplay
 		}
 		public void Update(int x, int y)
 		{
-			ParallelProject(ref screen, model, Xi, Ypsilon, Zeta);
+			ParallelProject(ref screen, model, Alpha, Beta, Gamma);
 			Console.CursorVisible = false;
 
 			Console.SetCursorPosition(x * 2, y);
