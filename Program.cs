@@ -11,9 +11,8 @@ namespace ConsoleDisplay
 		static void Main(string[] args)
 		{
 			Thread.Sleep(1000);
-			ConsolePrograms.Clock();
-			//Display3D display = Display3D.NewDisplay(15, 10, 5, true);
-			//display.DrawLine(5, 2, 3, 6, 9, 4, '#', ConsoleColor.Red, ConsoleColor.Green);
+			ConsolePrograms.Snake();
+			Console.ReadLine();
 		}
 	}
 }
