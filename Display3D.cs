@@ -153,7 +153,50 @@ namespace ConsoleDisplay
 				z += dz;
 			}
 		}
-		protected void Project(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double xi, double ypsilon, double zeta)
+		protected void Project(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, Axis axis = Axis.x_Axis)
+		{
+			//orthogonal projection
+			//very slow; TODO: implement multithreading
+			if (axis == Axis.x_Axis)
+			{
+			}
+			else if (axis == Axis.y_Axis)
+			{
+				
+			}
+			else
+			{
+				int maxX = model.GetLength(0);
+				int maxY = model.GetLength(1);
+				int maxZ = model.GetLength(2);
+			}
+
+			for (int x = 0; x < model.GetLength(0); x++)
+			{
+				for (int y = 0; y < model.GetLength(1); y++)
+				{
+					char currentChar = ' ';
+					ConsoleColor currentForegroundColor = ConsoleColor.White;
+					ConsoleColor? currentBackgroundColor = null;
+					for (int z = 0; z < model.GetLength(2); z++)
+					{
+						if (currentBackgroundColor != null) break;
+						if (currentChar == ' ')
+						{
+							currentChar = model[x, y, z].Item1;
+							currentForegroundColor = model[x, y, z].Item2;
+						}
+						#if DEBUG
+						currentChar = z < 10 ? z.ToString()[0] : ' ';
+						currentForegroundColor = model[x, y, z].Item2;
+						#endif
+						currentBackgroundColor = model[x, y, z].Item3;
+					}
+					screen[x, y] = (currentChar, currentForegroundColor, currentBackgroundColor ?? ConsoleColor.Black);
+				}
+			}
+		}
+		protected void Project(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double alpha, double beta, double gamma)
 		{
 			//orthogonal projection
 			//very slow; TODO: implement multithreading
@@ -182,7 +225,7 @@ namespace ConsoleDisplay
 				}
 			}
 		}
-		protected void ParallelProject(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double xi, double ypsilon, double zeta)
+		protected void ParallelProject(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double alpha, double beta, double gamma)
 		{
 			for (int x = 0; x < model.GetLength(0); x++)
 			{
@@ -202,9 +245,9 @@ namespace ConsoleDisplay
 						currentBackgroundColor = model[x, y, z].Item3 ?? currentBackgroundColor;
 
 						//projectedX = x * cos(ypsilon) * cos(-zeta) + z * sin(ypsilon) + y * sin(-zeta)
-						double projectedX = (x - model.GetLength(0) / 2f) * Math.Cos(ypsilon) * Math.Cos(zeta) + (z - model.GetLength(2) / 2f) * Math.Sin(ypsilon) + (y - model.GetLength(1) / 2f) * Math.Sin(-zeta);
+						double projectedX = (x - model.GetLength(0) / 2f) * Math.Cos(beta) * Math.Cos(gamma) + (z - model.GetLength(2) / 2f) * Math.Sin(beta) + (y - model.GetLength(1) / 2f) * Math.Sin(-gamma);
 						//prejectedY = y * cos(-xi) * cos(zeta) + z * sin(-xi) + x * sin(zeta)
-						double projectedY = (y - model.GetLength(1) / 2f) * Math.Cos(-xi) * Math.Cos(zeta) + (z - model.GetLength(2) / 2f) * Math.Sin(-xi) + (x - model.GetLength(0) / 2f) * Math.Sin(zeta);
+						double projectedY = (y - model.GetLength(1) / 2f) * Math.Cos(-alpha) * Math.Cos(gamma) + (z - model.GetLength(2) / 2f) * Math.Sin(-alpha) + (x - model.GetLength(0) / 2f) * Math.Sin(gamma);
 						
 
 						projectedX += model.GetLength(0) / 2f;
@@ -222,7 +265,7 @@ namespace ConsoleDisplay
 				}
 			}
 		}
-		protected void PerspectiveProject(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double distance, double xi, double ypsilon, double zeta)
+		protected void PerspectiveProject(ref (char, ConsoleColor, ConsoleColor)[,] screen, (char, ConsoleColor, ConsoleColor?)[,,] model, double distance, double alpha, double beta, double gamma)
 		{
 			
 		}
