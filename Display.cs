@@ -173,7 +173,7 @@ namespace ConsoleDisplay
 					Console.BackgroundColor = BackgroundColor[i, j];
 					Console.Write(Character[i, j]);
 					Console.ForegroundColor = BackgroundColor[i, j];
-					Console.Write('.'); //Space does not print every time, whyever
+					Console.Write(' '); //Space does not print every time, whyever
 				}
 				Console.WriteLine();
 			}
@@ -193,7 +193,7 @@ namespace ConsoleDisplay
 					Console.BackgroundColor = BackgroundColor[i, j];
 					Console.Write(Character[i, j]);
 					Console.ForegroundColor = BackgroundColor[i, j];
-					Console.Write('.'); //Space does not print every time, whyever
+					Console.Write(' '); //Space does not print every time, whyever
 				}
 			}
 			Console.ForegroundColor = ConsoleColor.White;

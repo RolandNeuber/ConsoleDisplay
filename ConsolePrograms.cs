@@ -170,17 +170,20 @@ namespace ConsoleDisplay
 		}
 		public static void Pong(int size = 10, int minFrameTime = 100)
 		{
+			ConsoleColor[] ballColors = [ConsoleColor.White, ConsoleColor.Cyan, ConsoleColor.Magenta, ConsoleColor.Yellow];
+			ConsoleColor currentBallColor = ConsoleColor.White;
+
 			Display display = Display.NewDisplay(4 * size + 1, 2 * size + 3, autoUpdate: true, fillSymbol: ' ');
 			display.DrawLine(0, 0, 4 * size, 0, backgroundColor: ConsoleColor.White);
 			display.DrawLine(0, 2 * size + 2, 4 * size, 2 * size + 2, backgroundColor: ConsoleColor.White);
 
 			//Initialization
 			Random random = new();
-			int[] score = { 0, 0 };
-			int[] ballPos = { 2 * size, size + 1 };
-			int[] ballDir = { random.Next(0, 2) == 0 ? -1 : 1, random.Next(0, 2) == 0 ? -1 : 1 };
-			int[] paddle1Pos = { 1, size + 1 };
-			int[] paddle2Pos = { 4 * size - 1, size + 1 };
+			int[] score = [0, 0];
+			int[] ballPos = [2 * size, size + 1];
+			int[] ballDir = [random.Next(0, 2) == 0 ? -1 : 1, random.Next(0, 2) == 0 ? -1 : 1];
+			int[] paddle1Pos = [1, size + 1];
+			int[] paddle2Pos = [4 * size - 1, size + 1];
 			int paddleHeight = (int)Math.Round(size / 4f);
 
 			//game loop
@@ -247,7 +250,8 @@ namespace ConsoleDisplay
 				if (ballPos[0] + ballDir[0] < 0)
 				{
 					score[1]++;
-					ballPos = new int[] { 2 * size, size + 1 };
+					ballPos = [2 * size, size + 1];
+					currentBallColor = ConsoleColor.White;
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.White);
 					//Thread.Sleep(1000);
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.Black);
@@ -255,7 +259,8 @@ namespace ConsoleDisplay
 				else if (ballPos[0] + ballDir[0] > 4 * size)
 				{
 					score[0]++;
-					ballPos = new int[] { 2 * size, size + 1};
+					ballPos = [2 * size, size + 1];
+					currentBallColor = ConsoleColor.White;
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.White);
 					//Thread.Sleep(1000);
 					//display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.Black);
@@ -263,18 +268,29 @@ namespace ConsoleDisplay
 
 				//vertical reflection
 				if (ballPos[1] + ballDir[1] < 1 || ballPos[1] + ballDir[1] > 2 * size + 1)
+				{
 					ballDir[1] = -ballDir[1];
+					currentBallColor = ballColors[random.Next(ballColors.Length)];
+				}
 
 				//horizontal reflection
 				if (ballPos[0] + ballDir[0] == 1 && Math.Abs(ballPos[1] + ballDir[1] - paddle1Pos[1]) <= paddleHeight)
+				{
 					ballDir[0] = -ballDir[0];
+					currentBallColor = ballColors[random.Next(ballColors.Length)];
+				}
 				if (ballPos[0] + ballDir[0] == 4 * size - 1 && Math.Abs(ballPos[1] + ballDir[1] - paddle2Pos[1]) <= paddleHeight)
+				{
 					ballDir[0] = -ballDir[0];
+					currentBallColor = ballColors[random.Next(ballColors.Length)];
+
+				}
 
 				ballPos[0] += ballDir[0];
 				ballPos[1] += ballDir[1];
 
-				display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.White);
+				// display.SetPixel(ballPos[0], ballPos[1], backgroundColor: ConsoleColor.White);
+				display.SetPixel(ballPos[0], ballPos[1], backgroundColor: currentBallColor);
 
 				//score
 				for (int i = 0; i < score[0].ToString().Length; i++)
